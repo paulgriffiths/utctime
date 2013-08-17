@@ -32,7 +32,7 @@ CXX_RELEASE_FLAGS=-O3 -DNDEBUG
 
 # Linker flags
 LDFLAGS=
-LD_TEST_FLAGS=-lCppUTest -lCppUTestExt -lutctime -L/home/paul/git/utctime
+LD_TEST_FLAGS=-lCppUTest -lCppUTestExt -lutctime -L$(CURDIR)
 LD_TEST_FLAGS_D=-lCppUTest -lCppUTestExt -lutctime -L$(LIBRARY_INSTALL_PATH)
 
 # Object code files
@@ -100,6 +100,8 @@ tests_d: testmain_d
 # install - installs library and headers
 .PHONY: install
 install:
+	@if [ ! -d $(INCLUDE_INSTALL_PATH)/paulgrif ]; then \
+		mkdir $(INCLUDE_INSTALL_PATH)/paulgrif; fi
 	@echo "Copying library to $(LIBRARY_INSTALL_PATH)..."
 	@cp $(OUT) $(LIBRARY_INSTALL_PATH)
 	@echo "Copying headers to $(INCLUDE_INSTALL_PATH)..."
