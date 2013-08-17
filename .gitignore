@@ -1,3 +1,9 @@
+# Unit test executable
+unittests
+
+# vim swap files
+*.swp
+
 # Compiled Object files
 *.slo
 *.lo
