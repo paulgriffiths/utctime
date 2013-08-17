@@ -1,5 +1,6 @@
-# Unit test executable
+# Unit test executables
 unittests
+unittests_d
 
 # vim swap files
 *.swp

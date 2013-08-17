@@ -13,10 +13,12 @@
 # Executable names
 OUT=libutctime.a
 TESTOUT=unittests
+TESTOUT_D=unittests_d
 
 # Install paths
-LIBRARY_INSTALL_PATH=~/lib/cpp
-INCLUDE_INSTALL_PATH=~/include/paulgrif
+#LIBRARY_INSTALL_PATH=~/lib/cpp
+LIBRARY_INSTALL_PATH=/home/paul/lib/cpp
+INCLUDE_INSTALL_PATH=/home/paul/include
 INSTALL_HEADERS=utctime.h
 
 # Compiler and archiver executable names
@@ -32,10 +34,12 @@ CXX_RELEASE_FLAGS=-O3 -DNDEBUG
 # Linker flags
 LDFLAGS=
 LD_TEST_FLAGS=-lCppUTest -lCppUTestExt -lutctime -L/home/paul/git/utctime
+LD_TEST_FLAGS_D=-lCppUTest -lCppUTestExt -lutctime -L$(LIBRARY_INSTALL_PATH)
 
 # Object code files
 MAINOBJ=utctime.o
 TESTMAINOBJ=tests/unittests.o
+TESTMAINOBJ_D=tests/unittests_d.o
 
 TESTOBJS=tests/test_tm_decrement_hour.o
 TESTOBJS+=tests/test_tm_decrement_minute.o
@@ -53,6 +57,7 @@ TESTOBJS+=tests/test_get_utc_timestamp_xxx.o
 TESTOBJS+=tests/test_validate_date.o
 TESTOBJS+=tests/test_utctime_comparison_operators.o
 TESTOBJS+=tests/test_utctime_subtraction_operator.o
+TESTOBJS_D=tests/test_deployed.o
 
 # Source and clean files and globs
 SRCS=$(wildcard *.cpp *.h)
@@ -86,6 +91,12 @@ release: main
 tests: CXXFLAGS+=$(CXX_DEBUG_FLAGS)
 tests: LDFLAGS+=$(LD_TEST_FLAGS)
 tests: testmain
+
+# tests_d - builds unit tests for deployed library
+.PHONY: tests_d
+tests_d: CXXFLAGS+=$(CXX_DEBUG_FLAGS) -I$(INCLUDE_INSTALL_PATH)
+tests_d: LDFLAGS+=$(LD_TEST_FLAGS_D)
+tests_d: testmain_d
 
 # install - installs library and headers
 .PHONY: install
@@ -129,6 +140,12 @@ main: $(MAINOBJ) $(OBJS)
 testmain: $(TESTMAINOBJ) $(TESTOBJS)
 	@echo "Linking unit tests..."
 	@$(CXX) -o $(TESTOUT) $(TESTMAINOBJ) $(TESTOBJS) $(LDFLAGS) 
+	@echo "Done."
+
+# Unit tests executable
+testmain_d: $(TESTMAINOBJ) $(TESTOBJS_D)
+	@echo "Linking unit tests..."
+	@$(CXX) -o $(TESTOUT_D) $(TESTMAINOBJ) $(TESTOBJS_D) $(LDFLAGS) 
 	@echo "Done."
 
 
@@ -227,5 +244,9 @@ tests/test_utctime_comparison_operators.o: \
 tests/test_utctime_subtraction_operator.o: \
 	tests/test_utctime_subtraction_operator.cpp \
 	utctime.cpp utctime.h
+	@echo "Compiling $<..."
+	@$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+tests/test_deployed.o: tests/test_deployed.cpp
 	@echo "Compiling $<..."
 	@$(CXX) $(CXXFLAGS) -c -o $@ $<
