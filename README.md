@@ -30,6 +30,7 @@ Download the source code and edit the file `Makefile` to modify the
 following variables:
 * LIBRARY_INSTALL_PATH
 * INCLUDE_INSTALL_PATH
+
 with the directories to which to install the library and the header file,
 respectively. From the command line, run `make` and then `make install` to
 deploy the library and headers. `#include <paulgrif/utctime.h>` to access
