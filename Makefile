@@ -10,13 +10,12 @@
 # Variables section
 # =================
 
-# Executable names
+# Library and executable names
 OUT=libutctime.a
 TESTOUT=unittests
 TESTOUT_D=unittests_d
 
 # Install paths
-#LIBRARY_INSTALL_PATH=~/lib/cpp
 LIBRARY_INSTALL_PATH=/home/paul/lib/cpp
 INCLUDE_INSTALL_PATH=/home/paul/include
 INSTALL_HEADERS=utctime.h
@@ -74,7 +73,7 @@ CLNGLOB+=tests/*~ tests/*.o tests/*.gcov tests/*.out tests/*.gcda tests/*.gcno
 # Build targets section
 # =====================
 
-default: debug
+default: release
 
 # debug - builds objects with debugging info
 .PHONY: debug
@@ -104,7 +103,7 @@ install:
 	@echo "Copying library to $(LIBRARY_INSTALL_PATH)..."
 	@cp $(OUT) $(LIBRARY_INSTALL_PATH)
 	@echo "Copying headers to $(INCLUDE_INSTALL_PATH)..."
-	@cp $(INSTALL_HEADERS) $(INCLUDE_INSTALL_PATH)
+	@cp $(INSTALL_HEADERS) $(INCLUDE_INSTALL_PATH)/paulgrif
 	@echo "Done."
 
 # clean - removes ancilliary files from working directory
