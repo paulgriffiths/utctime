@@ -1,0 +1,5 @@
+<map id="utctime::UTCTimeException" name="utctime::UTCTimeException">
+<area shape="rect" id="node3" href="$classutctime_1_1bad__time.html" title="Thrown when the time cannot be obtained." alt="" coords="5,83,131,112"/>
+<area shape="rect" id="node5" href="$classutctime_1_1bad__time__init.html" title="Thrown when the time cannot be initialized." alt="" coords="155,83,304,112"/>
+<area shape="rect" id="node7" href="$classutctime_1_1invalid__date.html" title="Thrown when an invalid date is provided to the constructor." alt="" coords="328,83,469,112"/>
+</map>
