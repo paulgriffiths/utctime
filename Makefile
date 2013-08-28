@@ -113,6 +113,17 @@ install:
 clean:
 	-@rm $(CLNGLOB) 2>/dev/null
 
+# docs - makes Doxygen documentation:
+.PHONY: docs
+docs:
+	@doxygen
+	-@cd latex; make; cd ..
+	@if [ ! -d docs ]; then \
+		mkdir docs; fi
+	@echo "Copying reference manual to docs..."
+	@cp latex/refman.pdf docs 
+	@echo "Done."
+
 # lint - runs cpplint with specified options
 .PHONY: lint
 lint:
