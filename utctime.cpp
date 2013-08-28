@@ -1,13 +1,10 @@
-/*
- *  utc_time.cpp
- *  ============
- *  Copyright 2013 Paul Griffiths
- *  Email: mail@paulgriffiths.net
- *
- *  Implementation of UTCTime() class and functions.
- *
- *  Distributed under the terms of the GNU General Public License.
- *  http://www.gnu.org/licenses/
+/*!
+ * \file        utctime.cpp
+ * \brief       Implementation of UTCTime() class and associated functions.
+ * \details     Implementation of UTCTime() class and associated functions.
+ * \author      Paul Griffiths
+ * \copyright   Copyright 2013 Paul Griffiths. Distributed under the terms
+ * of the GNU General Public License. <http://www.gnu.org/licenses/>
  */
 
 
@@ -32,10 +29,10 @@ using std::strftime;
  ********************************************************************/
 
 
-/*
- *  Default constructor, initializes to current time.
- *
- *  Throws bad_time_init() if cannot get the current time.
+/*!
+ * \brief       Default constructor.
+ * \details     Default constructor, which initializes to the current time.
+ * \throws      bad_time_init if unable to get the current time.
  */
 
 UTCTime::UTCTime() :
@@ -61,11 +58,12 @@ UTCTime::UTCTime() :
 }
 
 
-/*
- *  Constructor initializing with a tm struct.
- *
- *  Throws bad_time_init() if cannot get the current time, or
- *  invalid_date() if the data supplied is bad.
+/*!
+ * \brief       Constructor taking a std::tm struct.
+ * \details     Constructor taking a std::tm struct.
+ * \param utc_tm A std::tm struct containing the desired initialization time.
+ * \throws      bad_time_init if unable to get the current time.
+ * \throws      invalid_date if the supplied date is bad.
  */
 
 UTCTime::UTCTime(const std::tm& utc_tm) :
@@ -88,11 +86,17 @@ UTCTime::UTCTime(const std::tm& utc_tm) :
 }
 
 
-/*
- *  Constructor for initializing to specified date & time.
- *
- *  Throws bad_time_init() if cannot get the current time, or
- *  invalid_date() if the data supplied is bad.
+/*!
+ * \brief       Constructor taking individual date values.
+ * \details     Constructor taking individual date values.
+ * \param year The year
+ * \param month The month, 1 to 12
+ * \param day The day, 1 to 31, depending on month
+ * \param hour The hour, 0 to 23
+ * \param minute The minute, 0 to 59
+ * \param second The second, 0 to 59. Leap seconds are not supported.
+ * \throws      bad_time_init if unable to get the current time.
+ * \throws      invalid_date if the supplied date is bad.
  */
 
 UTCTime::UTCTime(const int year, const int month,
@@ -116,8 +120,10 @@ UTCTime::UTCTime(const int year, const int month,
 }
 
 
-/*
- *  Returns a struct tm containing the date representation.
+/*!
+ * \brief       Returns a std::tm struct containing the UTC datetime.
+ * \details     Returns a std::tm struct containing the UTC datetime.
+ * \returns     A std::tm struct containing the UTC datetime.
  */
 
 std::tm UTCTime::get_tm() const {
@@ -133,10 +139,11 @@ std::tm UTCTime::get_tm() const {
 }
 
 
-/*
- *  Returns a string representation of the time
- *
- *  Throws bad_time() if cannot get the current time.
+/*!
+ * \brief       Returns a std::string containing the UTC datetime.
+ * \details     Returns a std::string containing the UTC datetime.
+ * \returns     A std::string containing the UTC datetime.
+ * \throws      bad_time if unable to get the time.
  */
 
 std::string UTCTime::time_string() const {
@@ -150,11 +157,13 @@ std::string UTCTime::time_string() const {
 }
 
 
-/*
- *  Returns a string representation of the time in internet
- *  RFC 3339 format
- *
- *  Throws bad_time() if cannot get the current time.
+/*!
+ * \brief       Returns a std::string containing the UTC datetime in RFC3339
+ * format.
+ * \details     Returns a std::string containing the UTC datetime in RFC3339
+ * format.
+ * \returns     A std::string containing the UTC datetime in RFC3339 format.
+ * \throws      bad_time if unable to get the time.
  */
 
 std::string UTCTime::time_string_inet() const {
@@ -168,8 +177,10 @@ std::string UTCTime::time_string_inet() const {
 }
 
 
-/*
- *  Returns the timestamp.
+/*!
+ * \brief       Returns a time_t timestamp for the UTC datetime.
+ * \details     Returns a time_t timestamp for the UTC datetime.
+ * \returns     A time_t timestamp for the UTC datetime.
  */
 
 time_t UTCTime::timestamp() const {
@@ -184,9 +195,19 @@ time_t UTCTime::timestamp() const {
  ********************************************************************/
 
 
-/*
- *  Checks whether a supplied date is valid, and throws invalid_date()
- *  if it isn't.
+/*!
+ * \brief       Checks whether a supplied date is valid.
+ * \details     Checks whether a supplied date is valid.
+ * \param year The year
+ * \param month The month, 1 to 12
+ * \param day The day, 1 to 31, depending on the month
+ * \param hour The hour, 0 to 23
+ * \param minute The minute, 0 to 59
+ * \param second The second, 0 to 59. Leap seconds are not supported.
+ * \returns     true if the date if valid.
+ * \throws      invalid_date if the date is not valid.
+ * \todo        Why does this throw an exception? Why not return false?
+ * In order so that the error message can show why it's invalid?
  */
 
 bool utctime::validate_date(const int year, const int month,
@@ -235,16 +256,28 @@ bool utctime::validate_date(const int year, const int month,
 }
 
 
-/*
- *  Checks whether the provided time_t timestamp yields a UTC
- *  date corresponding with the date and time information provided
- *  when gmtime() is called with it.
- *
- *  The function modifies the second argument, 'secs_diff', to contain
- *  the difference in seconds between the time we're checking, and
- *  the time gmtime() actually gives us. 
- *
- *  Throws bad_time() if cannot get the current time.
+/*!
+ * \brief       Checks if a UTC timestamp is accurate.
+ * \details     Checks if a UTC timestampe is accurate. A time_t timestamp
+ * is computed from the supplied datetime elements, and compared to the
+ * supplied time_t timestamp. The difference between the two, in seconds,
+ * is stored in the supplied secs_diff argument. This function is needed
+ * because the methodology used to calculate a timestamp by this library
+ * can sometimes be inaccurate when leap seconds or other unpredictable
+ * calendar changes occur. We therefore need a method to check if the
+ * returned timestamp is accurate. Other functions provided in this
+ * library call this function, so the user should not normally need to
+ * call it.
+ * \param check_time The time_t timestamp to check
+ * \param secs_diff Modified to contain the difference, in seconds
+ * \param year The year
+ * \param month The month, 1 to 12
+ * \param day The day, 1 to 31, depending on the month
+ * \param hour The hour, 0 to 23
+ * \param minute The minute, 0 to 59
+ * \param second The second, 0 to 59
+ * \returns     true if the supplied timestamp is accurate, false otherwise
+ * \throws      bad_time if the current time cannot be obtained.
  */
 
 bool utctime::check_utc_timestamp(const time_t check_time, int& secs_diff,
@@ -285,20 +318,27 @@ bool utctime::check_utc_timestamp(const time_t check_time, int& secs_diff,
 }
 
 
+/*!
+ * \brief       Returns a time_t interval representing one day.
+ * \details     Returns a time_t interval representing one day. The C
+ * standard does not define the units in which a time_t value is measured.
+ * On POSIX-compliant systems it is measured in seconds, but we cannot
+ * assume this for full portability.
+ * \returns     A time_t interval representing one day.
+ * \throws      bad_time if the current time cannot be obtained.
+ */
+
 /*
- *  Calculate a time_t value which represents a difference of
- *  one day. The C standard does not define the units in which
- *  a time_t value is measured. On most UNIX systems it's measured
- *  in seconds, but we can't assume this, so we find out for
- *  sure by setting up two struct tms a day apart and calculating
- *  the difference between the values that mktime() yields.
+ *  The function works by setting up two struct tms a day apart and
+ *  calculating the difference between the values that mktime() yields.
  *
  *  We've picked January 2 and January 3 as the dates to use, since
  *  we're likely clear of any DST or other weirdness on these dates.
  *  Since mktime() will modify the struct we pass to it if it represents
  *  a bad date, and since we reuse it, it should be good anyway.
  *
- *  Throws bad_time() if cannot get the current time.
+ *  The utctime::get_hour_diff() and utctime::get_sec_diff() functions
+ *  work in a similar way.
  */
 
 time_t utctime::get_day_diff() {
@@ -326,20 +366,14 @@ time_t utctime::get_day_diff() {
 }
 
 
-/*
- *  Calculate a time_t value which represents a difference of
- *  one hour. The C standard does not define the units in which
- *  a time_t value is measured. On most UNIX systems it's measured
- *  in seconds, but we can't assume this, so we find out for
- *  sure by setting up two struct tms a second apart and calculating
- *  the difference between the values that mktime() yields.
- *
- *  We've picked January 2 as the date to use, since we're likely clear
- *  of any DST or other weirdness on these dates. Since mktime() will
- *  modify the struct we pass to it if it represents a bad date, and
- *  since we reuse it, it should be good anyway.
- *
- *  Throws bad_time() if cannot get the current time.
+/*!
+ * \brief       Returns a time_t interval representing one hour.
+ * \details     Returns a time_t interval representing one hour. The C
+ * standard does not define the units in which a time_t value is measured.
+ * On POSIX-compliant systems it is measured in seconds, but we cannot
+ * assume this for full portability.
+ * \returns     A time_t interval representing one hour.
+ * \throws      bad_time if the current time cannot be obtained.
  */
 
 time_t utctime::get_hour_diff() {
@@ -367,20 +401,14 @@ time_t utctime::get_hour_diff() {
 }
 
 
-/*
- *  Calculate a time_t value which represents a difference of
- *  one second. The C standard does not define the units in which
- *  a time_t value is measured. On most UNIX systems it's measured
- *  in seconds, but we can't assume this, so we find out for
- *  sure by setting up two struct tms a second apart and calculating
- *  the difference between the values that mktime() yields.
- *
- *  We've picked January 2 as the date to use, since we're likely clear
- *  of any DST or other weirdness on these dates. Since mktime() will
- *  modify the struct we pass to it if it represents a bad date, and
- *  since we reuse it, it should be good anyway.
- *
- *  Throws bad_time() if cannot get the current time.
+/*!
+ * \brief       Returns a time_t interval representing one second.
+ * \details     Returns a time_t interval representing one second. The C
+ * standard does not define the units in which a time_t value is measured.
+ * On POSIX-compliant systems it is measured in seconds, but we cannot
+ * assume this for full portability.
+ * \returns     A time_t interval representing one second.
+ * \throws      bad_time if the current time cannot be obtained.
  */
 
 time_t utctime::get_sec_diff() {
@@ -408,13 +436,15 @@ time_t utctime::get_sec_diff() {
 }
 
 
-/*
- *  Compares two struct tms. Returns -1 is the first struct tm is
- *  smaller than the second, 1 if the first struct tm is greater
- *  than the second, and 0 if they are equal.
- *
- *  The function only compares the year, month, day, hour, minute
- *  and second. Any timezone or DST information is ignored.
+/*!
+ * \brief       Compares two std::tm structs.
+ * \details     Compares two std::tm structs. Only the year, month, day,
+ * hour, minute and second are compared. Any timezone or DST information
+ * is ignored.
+ * \param first The first std::tm struct.
+ * \param second The second std::tm struct.
+ * \returns     -1 if `first` is earlier than `second`, 1 if `first` is later
+ * than `second`, and 0 if `first` is equal to `second`.
  */
 
 int utctime::tm_compare(const std::tm& first, const std::tm& second) {
@@ -440,17 +470,18 @@ int utctime::tm_compare(const std::tm& first, const std::tm& second) {
 }
 
 
-/*
- *  Returns the difference in seconds between two times which are
- *  assumed to be within 24 hours of each other. 
- *
- *  If they are not within 24 hours of each other, the result is
- *  returned as if they were. For instance, comparing 10am on one day
- *  to 2pm on the next day will yield a difference of 4 hours, not
- *  28 hours.
- *
- *  The value returned is positive if 'second' is later than 'first',
- *  and negative if 'second' is earlier than 'first'.
+/*!
+ * \brief       Returns the difference between two std::tm structs.
+ * \details     Returns the difference between two std::tm structs. The
+ * structs are assumed to be within 24 hours of each other, and if they
+ * are not, the returned result is computed as if they were. For instance,
+ * comparing 10:00 on one day to 14:00 on the next day will yield a
+ * difference equivalent to 4 hours, not to 28 hours.
+ * \param first The first std::tm struct
+ * \param second The second std::tm struct
+ * \returns The difference, in seconds, between the two std::tm structs.
+ * The difference is positive if `first` is earlier than `second`, and
+ * negative if `second` is earlier than `first`.
  */
 
 int utctime::tm_intraday_secs_diff(const std::tm& first,
@@ -480,8 +511,11 @@ int utctime::tm_intraday_secs_diff(const std::tm& first,
 }
 
 
-/*
- *  Returns true if the supplied year is a leap year.
+/*!
+ * \brief       Checks if the supplied year is a leap year.
+ * \details     Checks if the supplied year is a leap year.
+ * \param year A year
+ * \returns     `true` is `year` is a leap year, `false` otherwise.
  */
 
 bool utctime::is_leap_year(const int year) {
@@ -497,8 +531,14 @@ bool utctime::is_leap_year(const int year) {
 }
 
 
-/*
- *  Adds a day to a supplied tm struct.
+/*!
+ * \brief       Adds one or more days to a std::tm struct.
+ * \details     Adds one or more days to a std::tm struct, incrementing
+ * the month and/or the year as necessary.
+ * \param changing_tm A pointer to the std::tm struct to increment. The
+ * struct referred to by the pointer is modified by the function.
+ * \param quantity The number of days to add
+ * \returns A pointer to the same std::tm struct.
  */
 
 std::tm* utctime::tm_increment_day(std::tm* changing_tm, const int quantity) {
@@ -569,8 +609,14 @@ std::tm* utctime::tm_increment_day(std::tm* changing_tm, const int quantity) {
 }
 
 
-/*
- *  Adds an hour to a supplied tm struct.
+/*!
+ * \brief       Adds one or more hours to a std::tm struct.
+ * \details     Adds one or more hours to a std::tm struct, incrementing
+ * the day, month and/or the year as necessary.
+ * \param changing_tm A pointer to the std::tm struct to increment. The
+ * struct referred to by the pointer is modified by the function.
+ * \param quantity The number of hours to add
+ * \returns A pointer to the same std::tm struct.
  */
 
 std::tm* utctime::tm_increment_hour(std::tm* changing_tm, const int quantity) {
@@ -600,8 +646,14 @@ std::tm* utctime::tm_increment_hour(std::tm* changing_tm, const int quantity) {
 }
 
 
-/*
- *  Adds a minute to a supplied tm struct.
+/*!
+ * \brief       Adds one or more minutes to a std::tm struct.
+ * \details     Adds one or more minutes to a std::tm struct, incrementing
+ * the hour, day, month and/or the year as necessary.
+ * \param changing_tm A pointer to the std::tm struct to increment. The
+ * struct referred to by the pointer is modified by the function.
+ * \param quantity The number of minutes to add
+ * \returns A pointer to the same std::tm struct.
  */
 
 std::tm* utctime::tm_increment_minute(std::tm* changing_tm,
@@ -631,8 +683,14 @@ std::tm* utctime::tm_increment_minute(std::tm* changing_tm,
 }
 
 
-/*
- *  Adds a second to a supplied tm struct.
+/*!
+ * \brief       Adds one or more seconds to a std::tm struct.
+ * \details     Adds one or mor seconds to a std::tm struct, incrementing
+ * the minute, hour, day, month and/or the year as necessary.
+ * \param changing_tm A pointer to the std::tm struct to increment. The
+ * struct referred to by the pointer is modified by the function.
+ * \param quantity The number of seconds to add
+ * \returns A pointer to the same std::tm struct.
  */
 
 std::tm* utctime::tm_increment_second(std::tm* changing_tm,
@@ -663,8 +721,14 @@ std::tm* utctime::tm_increment_second(std::tm* changing_tm,
 }
 
 
-/*
- *  Deducts a day from a supplied tm struct.
+/*!
+ * \brief       Deducts one or more days from a std::tm struct.
+ * \details     Deducts one or more days from a std::tm struct, decrementing
+ * the month and/or the year as necessary.
+ * \param changing_tm A pointer to the std::tm struct to increment. The
+ * struct referred to by the pointer is modified by the function.
+ * \param quantity The number of days to deduct
+ * \returns A pointer to the same std::tm struct.
  */
 
 std::tm* utctime::tm_decrement_day(std::tm* changing_tm, const int quantity) {
@@ -730,8 +794,14 @@ std::tm* utctime::tm_decrement_day(std::tm* changing_tm, const int quantity) {
 }
 
 
-/*
- *  Deducts an hour from a supplied tm struct.
+/*!
+ * \brief       Deducts one or more hours from a std::tm struct.
+ * \details     Deducts one or more hours from a std::tm struct, decrementing
+ * the day, month and/or the year as necessary.
+ * \param changing_tm A pointer to the std::tm struct to increment. The
+ * struct referred to by the pointer is modified by the function.
+ * \param quantity The number of hours to deduct
+ * \returns A pointer to the same std::tm struct.
  */
 
 std::tm* utctime::tm_decrement_hour(std::tm* changing_tm, const int quantity) {
@@ -760,8 +830,14 @@ std::tm* utctime::tm_decrement_hour(std::tm* changing_tm, const int quantity) {
 }
 
 
-/*
- *  Deducts a minute from a supplied tm struct.
+/*!
+ * \brief       Deducts one or more minutes from a std::tm struct.
+ * \details     Deducts one or more minutes from a std::tm struct, decrementing
+ * the hour, day, month and/or the year as necessary.
+ * \param changing_tm A pointer to the std::tm struct to increment. The
+ * struct referred to by the pointer is modified by the function.
+ * \param quantity The number of minutes to deduct
+ * \returns A pointer to the same std::tm struct.
  */
 
 std::tm* utctime::tm_decrement_minute(std::tm* changing_tm,
@@ -790,8 +866,14 @@ std::tm* utctime::tm_decrement_minute(std::tm* changing_tm,
 }
 
 
-/*
- *  Deducts a second from a supplied tm struct.
+/*!
+ * \brief       Deducts one or more seconds from a std::tm struct.
+ * \details     Deducts one or more seconds from a std::tm struct, decrementing
+ * the minute, hour, day, month and/or the year as necessary.
+ * \param changing_tm A pointer to the std::tm struct to increment. The
+ * struct referred to by the pointer is modified by the function.
+ * \param quantity The number of seconds to deduct
+ * \returns A pointer to the same std::tm struct.
  */
 
 std::tm* utctime::tm_decrement_second(std::tm* changing_tm,
@@ -821,11 +903,17 @@ std::tm* utctime::tm_decrement_second(std::tm* changing_tm,
 }
 
 
-/*
- *  Returns a time_t timestamp for the given arguments
- *  representing a UTC time.
- *
- *  Throws bad_time() if cannot get the current time.
+/*!
+ * \brief       Gets a time_t timestamp for a requested UTC time.
+ * \details     Gets a time_t timestamp for a requested UTC time.
+ * \param year The year
+ * \param month The month, 1 to 12
+ * \param day The day, 1 to 31, depending on the month
+ * \param hour The hour, 0 to 23
+ * \param minute The minute, 0 to 59
+ * \param second The second, 0 to 59. Leap seconds are not supported.
+ * \returns     A time_t timestamp for the requested UTC time.
+ * \throws      bad_time if the current time cannot be obtained.
  */
 
 time_t utctime::get_utc_timestamp(const int year, const int month,
@@ -885,19 +973,25 @@ time_t utctime::get_utc_timestamp(const int year, const int month,
 }
 
 
-/*
- *  Returns the difference, in seconds, between the UTC time
- *  calculated by calling gmtime() with the provided timestamp,
- *  and the UTC time desired, specified in the other arguments.
- *
- *  This function only returns a good value if the timestamp is less
- *  than 24 hours away from the desired time, so the caller should
- *  make sure it is.
- *
- *  This function may also return a value off by one second if
- *  you're unlucky enough to both have a leap second fall between
- *  the desired UTC time and the provided time stamp, and if you're
- *  on a system which implements leap seconds.
+/*!
+ * \brief       Checks a time_t timestamp against a UTC time.
+ * \details     Checks a time_t timestamp against a UTC time, and returns
+ * the difference in seconds. This function only returns a good value
+ * if the timestamp is less than 24 hours away from the desired time,
+ * so the caller is responsible for making sure that it is. This function
+ * may also return a bad value if a leap second or other unpredictable
+ * calendar change falls between the desired UTC time and the provided
+ * time stamp. The result should therefore always be checked with
+ * utctime::check_utc_timestamp(), or by calling this function again.
+ * \param check_time The time_t timestamp to check
+ * \param year The year
+ * \param month The month, 1 to 12
+ * \param day The day, 1 to 31, depending on the month
+ * \param hour The hour, 0 to 23
+ * \param minute The minute, 0 to 59
+ * \param second The second, 0 to 59. Leap seconds are not supported.
+ * \returns     The difference, if any, represented in seconds.
+ * \throws      bad_time if the current time cannot be obtained.
  */
 
 int utctime::get_utc_timestamp_sec_diff(const time_t check_time,
@@ -930,8 +1024,11 @@ int utctime::get_utc_timestamp_sec_diff(const time_t check_time,
 }
 
 
-/*
- *  Less than operator.
+/*!
+ * \brief       Overloaded less than operator
+ * \details     Overloaded less than operator
+ * \param rhs The UTCTime instance to which to compare
+ * \returns     true if the instance is less than `rhs`, false otherwise.
  */
 
 bool UTCTime::operator<(const UTCTime& rhs) const {
@@ -953,8 +1050,12 @@ bool UTCTime::operator<(const UTCTime& rhs) const {
 }
 
 
-/*
- *  Greater than or equal to operator
+/*!
+ * \brief       Overloaded greater than or equal to operator
+ * \details     Overloaded greater than or equal to operator
+ * \param rhs The UTCTime instance to which to compare
+ * \returns     true if the instance is greater than or equal to `rhs`,
+ * false otherwise.
  */
 
 bool UTCTime::operator>=(const UTCTime& rhs) const {
@@ -962,8 +1063,11 @@ bool UTCTime::operator>=(const UTCTime& rhs) const {
 }
 
 
-/*
- *  Greater than operator.
+/*!
+ * \brief       Overloaded greater than operator
+ * \details     Overloaded greater than operator
+ * \param rhs The UTCTime instance to which to compare
+ * \returns     true if the instance is greater than `rhs`, false otherwise.
  */
 
 bool UTCTime::operator>(const UTCTime& rhs) const {
@@ -985,8 +1089,12 @@ bool UTCTime::operator>(const UTCTime& rhs) const {
 }
 
 
-/*
- *  Less than or equal to operator
+/*!
+ * \brief       Overloaded less than or equal to operator
+ * \details     Overloaded less than or equal to operator
+ * \param rhs The UTCTime instance to which to compare
+ * \returns     true if the instance is less than or equal to `rhs`,
+ * false otherwise.
  */
 
 bool UTCTime::operator<=(const UTCTime& rhs) const {
@@ -994,8 +1102,11 @@ bool UTCTime::operator<=(const UTCTime& rhs) const {
 }
 
 
-/*
- *  Equality operator.
+/*!
+ * \brief       Overloaded equality operator
+ * \details     Overloaded equality operator
+ * \param rhs The UTCTime instance to which to compare
+ * \returns     true if the instance is equal to `rhs`, false otherwise.
  */
 
 bool UTCTime::operator==(const UTCTime& rhs) const {
@@ -1012,8 +1123,11 @@ bool UTCTime::operator==(const UTCTime& rhs) const {
 }
 
 
-/*
- *  Inequality operator
+/*!
+ * \brief       Overloaded inequality operator
+ * \details     Overloaded inequality operator
+ * \param rhs The UTCTime instance to which to compare
+ * \returns     true if the instance is not equal to `rhs`, false otherwise.
  */
 
 bool UTCTime::operator!=(const UTCTime& rhs) const {
@@ -1021,8 +1135,11 @@ bool UTCTime::operator!=(const UTCTime& rhs) const {
 }
 
 
-/*
- *  Subtraction operator, returns difference in seconds.
+/*!
+ * \brief       Overloaded subtraction operator
+ * \details     Overloaded subtraction operator
+ * \param rhs The UTCTime instance to subtract from the instance
+ * \returns     The difference, in seconds, between the two instances.
  */
 
 double UTCTime::operator-(const UTCTime& rhs) const {
