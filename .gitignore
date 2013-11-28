@@ -6,8 +6,9 @@ unittests_d
 html
 latex
 
-# vim swap files
+# vim swap and backup files
 *.swp
+*~
 
 # Compiled Object files
 *.slo

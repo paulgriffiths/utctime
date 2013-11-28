@@ -16,8 +16,8 @@ TESTOUT=unittests
 TESTOUT_D=unittests_d
 
 # Install paths
-LIBRARY_INSTALL_PATH=/home/paul/lib/cpp
-INCLUDE_INSTALL_PATH=/home/paul/include
+LIBRARY_INSTALL_PATH=~/lib/cpp
+INCLUDE_INSTALL_PATH=~/include
 INSTALL_HEADERS=utctime.h
 
 # Compiler and archiver executable names
